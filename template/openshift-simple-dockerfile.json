@@ -1,0 +1,240 @@
+{
+    "kind": "Template",
+    "apiVersion": "v1",
+    "metadata": {
+        "name": "test",
+        "creationTimestamp": null
+    },
+    "objects": [
+        {
+            "kind": "BuildConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "openshift-simple-dockerfile",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "openshift-simple-dockerfile"
+                }
+            },
+            "spec": {
+                "triggers": [
+                    {
+                        "type": "GitHub",
+                        "github": {
+                            "secret": "c7UoBenBQ_RFMAB0ZKBi"
+                        }
+                    },
+                    {
+                        "type": "Generic",
+                        "generic": {
+                            "secret": "Q3Zaop3dBIST7M1Uzz_S"
+                        }
+                    },
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "type": "ImageChange",
+                        "imageChange": {}
+                    }
+                ],
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "https://github.com/talset/openshift-simple-dockerfile.git"
+                    }
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "ImageStreamTag",
+                            "name": "python-33-rhel7:latest"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "openshift-simple-dockerfile:latest"
+                    }
+                },
+                "resources": {}
+            },
+            "status": {
+                "lastVersion": 0
+            }
+        },
+        {
+            "kind": "Build",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "openshift-simple-dockerfile-1",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "openshift-simple-dockerfile",
+                    "buildconfig": "openshift-simple-dockerfile"
+                },
+                "annotations": {
+                    "openshift.io/build.number": "1"
+                }
+            },
+            "spec": {
+                "serviceAccount": "builder",
+                "source": {
+                    "type": "Git",
+                    "git": {
+                        "uri": "https://github.com/talset/openshift-simple-dockerfile.git"
+                    }
+                },
+                "strategy": {
+                    "type": "Docker",
+                    "dockerStrategy": {
+                        "from": {
+                            "kind": "DockerImage",
+                            "name": "registry.access.redhat.com/openshift3/python-33-rhel7:latest"
+                        }
+                    }
+                },
+                "output": {
+                    "to": {
+                        "kind": "ImageStreamTag",
+                        "name": "openshift-simple-dockerfile:latest"
+                    },
+                    "pushSecret": {
+                        "name": "builder-dockercfg-okuwp"
+                    }
+                },
+                "resources": {}
+            },
+            "status": {
+                "phase": "New",
+                "config": {
+                    "name": "openshift-simple-dockerfile"
+                }
+            }
+        },
+        {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "openshift-simple-dockerfile",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "openshift-simple-dockerfile"
+                }
+            },
+            "spec": {},
+            "status": {
+                "dockerImageRepository": ""
+            }
+        },
+        {
+            "kind": "DeploymentConfig",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "openshift-simple-dockerfile",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "openshift-simple-dockerfile"
+                }
+            },
+            "spec": {
+                "strategy": {
+                    "type": "Rolling",
+                    "rollingParams": {
+                        "updatePeriodSeconds": 1,
+                        "intervalSeconds": 1,
+                        "timeoutSeconds": 600,
+                        "maxUnavailable": "25%",
+                        "maxSurge": "25%"
+                    },
+                    "resources": {}
+                },
+                "triggers": [
+                    {
+                        "type": "ConfigChange"
+                    },
+                    {
+                        "type": "ImageChange",
+                        "imageChangeParams": {
+                            "automatic": true,
+                            "containerNames": [
+                                "openshift-simple-dockerfile"
+                            ],
+                            "from": {
+                                "kind": "ImageStreamTag",
+                                "name": "openshift-simple-dockerfile:latest"
+                            }
+                        }
+                    }
+                ],
+                "replicas": 1,
+                "selector": {
+                    "app": "openshift-simple-dockerfile",
+                    "deploymentconfig": "openshift-simple-dockerfile"
+                },
+                "template": {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "app": "openshift-simple-dockerfile",
+                            "deploymentconfig": "openshift-simple-dockerfile"
+                        }
+                    },
+                    "spec": {
+                        "containers": [
+                            {
+                                "name": "openshift-simple-dockerfile",
+                                "image": "openshift-simple-dockerfile",
+                                "ports": [
+                                    {
+                                        "containerPort": 8000,
+                                        "protocol": "TCP"
+                                    }
+                                ],
+                                "resources": {},
+                                "terminationMessagePath": "/dev/termination-log",
+                                "imagePullPolicy": "Always"
+                            }
+                        ],
+                        "restartPolicy": "Always",
+                        "dnsPolicy": "ClusterFirst"
+                    }
+                }
+            },
+            "status": {}
+        },
+        {
+            "kind": "Service",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "openshift-simple-dockerf",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "openshift-simple-dockerfile"
+                }
+            },
+            "spec": {
+                "ports": [
+                    {
+                        "name": "8000-tcp",
+                        "protocol": "TCP",
+                        "port": 8000,
+                        "targetPort": 8000,
+                        "nodePort": 0
+                    }
+                ],
+                "selector": {
+                    "app": "openshift-simple-dockerfile",
+                    "deploymentconfig": "openshift-simple-dockerfile"
+                },
+                "type": "ClusterIP",
+                "sessionAffinity": "None"
+            },
+            "status": {
+                "loadBalancer": {}
+            }
+        }
+    ]
+}
