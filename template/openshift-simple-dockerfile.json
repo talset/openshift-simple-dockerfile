@@ -130,6 +130,23 @@
             }
         },
         {
+            "kind": "ImageStream",
+            "apiVersion": "v1",
+            "metadata": {
+                "name": "python-33-rhel7",
+                "creationTimestamp": null,
+                "labels": {
+                    "app": "openshift-simple-dockerfile"
+                }
+            },
+            "spec": {
+                "dockerImageRepository": "registry.access.redhat.com/openshift3/python-33-rhel7"
+            },
+            "status": {
+                "dockerImageRepository": ""
+            }
+        },
+        {
             "kind": "DeploymentConfig",
             "apiVersion": "v1",
             "metadata": {
