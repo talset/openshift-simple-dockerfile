@@ -100,9 +100,6 @@
                     "to": {
                         "kind": "ImageStreamTag",
                         "name": "openshift-simple-dockerfile:latest"
-                    },
-                    "pushSecret": {
-                        "name": "builder-dockercfg-okuwp"
                     }
                 },
                 "resources": {}
