@@ -6,5 +6,5 @@ RUN cat /etc/yum.repos.d/*
 #RUN curl -v docker-registry.default.svc.cluster.local:5000
 EXPOSE 8000
 #RUN sleep 10000
-RUN echo "test1"
+RUN echo "test2"
 CMD  python -m SimpleHTTPServer 8000
